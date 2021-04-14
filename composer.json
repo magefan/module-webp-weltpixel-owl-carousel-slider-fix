@@ -1,0 +1,21 @@
+{
+    "name": "magefan/module-webp-weltpixel-owl-carousel-slider-fix",
+    "description": "",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "name": "Magefan",
+            "email": "support@magefan.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Magefan\\WebPWeltPixelOwlCarouselSlider\\": ""
+        }
+    }
+}
