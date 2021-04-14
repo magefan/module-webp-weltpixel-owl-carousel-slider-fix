@@ -1,6 +1,6 @@
-# Mage2 Module Magefan WebPWeltPixelOwlCarouselSlider
+# Fix for # [Magento 2 WebP Extension](https://magefan.com/magento-2-webp-optimized-images) by Magefan and WeltPixel OwlCarouselSlider
 
-    ``magefan/module-webpweltpixelowlcarouselslider``
+    ``magefan/module-webp-weltpixel-owl-carousel-slider-fix``
 
  - [Main Functionalities](#markdown-header-main-functionalities)
  - [Installation](#markdown-header-installation)
@@ -10,17 +10,22 @@
 
 
 ## Main Functionalities
-
+Fix the incompatibility.
 
 ## Installation
 \* = in production please use the `--keep-generated` option
 
 ### Type 1: Zip file
 
- - Unzip the zip file in `app/code/Magefan`
- - Enable the module by running `php bin/magento module:enable Magefan_WebPWeltPixelOwlCarouselSlider`
- - Apply database updates by running `php bin/magento setup:upgrade`\*
- - Flush the cache by running `php bin/magento cache:flush`
+ - Unzip the zip file in `app/code/Magefan/WebPWeltPixelOwlCarouselSlider`
+ - Run the commands:
+``
+  php bin/magento module:enable Magefan_WebPWeltPixelOwlCarouselSlider
+  
+  php bin/magento setup:upgrade\*
+  
+  php bin/magento cache:flush
+  ``
 
 ### Type 2: Composer
 
