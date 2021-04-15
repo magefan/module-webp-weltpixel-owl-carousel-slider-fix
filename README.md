@@ -1,9 +1,5 @@
 # Fix for [Magento 2 WebP Extension](https://magefan.com/magento-2-webp-optimized-images) by Magefan and WeltPixel OwlCarouselSlider
 
-    ``magefan/module-webp-weltpixel-owl-carousel-slider-fix``
-
-## Main Functionalities
-Fix the incompatibility.
 
 ## Requirements
   * [Magento 2 WebP Extension](https://magefan.com/magento-2-webp-optimized-images) >= v2.1.0. 
