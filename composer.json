@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "magefan/module-webp" : ">=2.1.0",
+        "magefan/module-webp" : ">=2.1.0"
     },
     "version": "2.0.0",
     "type": "magento2-module",
