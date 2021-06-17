@@ -1,0 +1,20 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        require(['jquery'], function ($) {
+            if ($('picture img[data-hoversrc]').length && MagefanWebP && MagefanWebP.canUseWebP() && (! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )) {
+                $('picture img[data-hoversrc]').each(function() {
+                    var source = this.parentElement.querySelector('source'),
+                        hoversrc = MagefanWebP.getWebUrl(source.getAttribute('data-hoversrc'));
+
+                    if (hoversrc) {
+                        source.setAttribute('data-hoversrc', hoversrc);
+                    }
+
+                    this.setAttribute('onmouseover', "var source = this.parentElement.querySelector('source'); source.setAttribute('data-tmp', source.getAttribute('srcset')); source.setAttribute('srcset', source.getAttribute('data-hoversrc'));");
+                    this.setAttribute('onmouseout', "var source = this.parentElement.querySelector('source'); source.setAttribute('srcset', source.getAttribute('data-tmp'))");
+                    this.setAttribute('onmousemove', "var source = this.parentElement.querySelector('source'); if (source.getAttribute('data-hoversrc') != source.getAttribute('srcset')) source.setAttribute('data-tmp', source.getAttribute('srcset'))");
+                });
+            }
+        });
+    });
+</script>
