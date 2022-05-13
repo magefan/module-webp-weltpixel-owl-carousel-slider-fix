@@ -1,5 +1,7 @@
 # Fix for [Magento 2 WebP Extension](https://magefan.com/magento-2-webp-optimized-images) by Magefan and WeltPixel OwlCarouselSlider
 
+<a href="https://www.comebackalive.in.ua/donate"><img width="830" height="208" src="https://cm.magefan.com/blog/support-ukraine.png"></a>
+
 <img width="150" height="100" src="https://magefan.com/media/wysiwyg/made_in_ukraine.jpg">
 
 ## Requirements
