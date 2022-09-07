@@ -85,7 +85,7 @@ class Custom
             foreach ($banners as $key => $banner) {
                 foreach (['image', 'mobile_image', 'thumb_image'] as $imageType) {
                     if ($banner[$imageType]) {
-                        $banner[$imageType] = $this->convertToWebp($banner[$imageType])  . '"  data-webpconverted="1';
+                        $banner[$imageType] = $this->convertToWebp($banner[$imageType]);
                     }
                 }
 
