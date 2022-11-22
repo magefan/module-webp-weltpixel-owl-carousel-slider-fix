@@ -102,3 +102,6 @@
   
   ### Shopware Extensions
   * [Shopware WebP Extension](https://magefan.com/shopware/extensions/webp)
+   
+  ### Shopify Apps
+  * [Shopify Login As Customer](https://apps.shopify.com/login-as-customer)
