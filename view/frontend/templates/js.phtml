@@ -1,5 +1,5 @@
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    window.wpWebPCompatibility = function() {
         require(['jquery'], function ($) {
             if ($('picture img[data-hoversrc]').length && MagefanWebP && MagefanWebP.canUseWebP() && (! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )) {
                 $('picture img[data-hoversrc]').each(function() {
@@ -16,5 +16,9 @@
                 });
             }
         });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        window.wpWebPCompatibility()
     });
 </script>

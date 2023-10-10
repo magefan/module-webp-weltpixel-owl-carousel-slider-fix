@@ -3,4 +3,7 @@
 	<type name="WeltPixel\OwlCarouselSlider\Block\Slider\Custom">
 		<plugin name="Magefan_WebPWeltPixelOwlCarouselSlider_Plugin_WeltPixel_OwlCarouselSlider_Block_Slider_Custom" type="Magefan\WebPWeltPixelOwlCarouselSlider\Plugin\WeltPixel\OwlCarouselSlider\Block\Slider\Custom" sortOrder="10" disabled="false"/>
 	</type>
+	<type name="WeltPixel\OwlCarouselSlider\Block\Slider\ConditionsProducts">
+		<plugin name="Magefan_WebPWeltPixelOwlCarouselSlider_Plugin_WeltPixel_OwlCarouselSlider_Block_Slider_ConditionsProducts" type="Magefan\WebPWeltPixelOwlCarouselSlider\Plugin\WeltPixel\OwlCarouselSlider\Block\Slider\ConditionsProducts" sortOrder="10" disabled="false"/>
+	</type>
 </config>
