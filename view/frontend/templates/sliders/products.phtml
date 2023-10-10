@@ -1,0 +1,373 @@
+<?php /* @var \WeltPixel\OwlCarouselSlider\Block\Slider\Products $this */ ?>
+
+<?php $sliderData    = $this->getSliderConfiguration(); ?>
+<?php $slideBy       = array_key_exists('slide_by', $sliderData) ? $sliderData['slide_by'] : 1 ?>
+<?php $enabled       = array_key_exists('status', $sliderData) ? $sliderData['status'] : ''; ?>
+<?php $showPrice     = array_key_exists('show_price', $sliderData) ? $sliderData['show_price'] : false; ?>
+<?php $showAddToCart = array_key_exists('show_addto', $sliderData) ? $sliderData['show_addto'] : false; ?>
+<?php $showWishlist  = (array_key_exists('show_wishlist', $sliderData) && $sliderData['show_wishlist'] !=0) ? true : false; ?>
+<?php $showCompare   = (array_key_exists('show_compare', $sliderData) && $sliderData['show_compare'] !=0) ? true : false; ?>
+<?php $showReviewsRatins   = (array_key_exists('show_reviews_ratings', $sliderData) && $sliderData['show_reviews_ratings'] !=0) ? true : false; ?>
+<?php $randomSort = (array_key_exists('random_sort', $sliderData) && $sliderData['random_sort'] == \WeltPixel\OwlCarouselSlider\Model\Config\Source\SortOrder::SORT_RANDOM) ? true : false; ?>
+<?php
+$sliderNavDesignVersion = array_key_exists('nav_design', $sliderData) ? $sliderData['nav_design'] : \WeltPixel\OwlCarouselSlider\Model\Config\Source\PrevNextDesign::DESIGN1_CAROUSEL_SIDE;
+$sliderPrevLabel = 'prev';
+$sliderNextLabel = 'next';
+$sliderNavPrevClass = 'owl-prev';
+$sliderNavNextClass = 'owl-next';
+if ($sliderNavDesignVersion == \WeltPixel\OwlCarouselSlider\Model\Config\Source\PrevNextDesign::DESIGN2_UNDER_CAROUSEL) {
+    $sliderNavPrevClass .= ' owl-prev-bottom owl-label-show';
+    $sliderNavNextClass .= ' owl-next-bottom owl-label-show';
+    $sliderPrevLabel = array_key_exists('nav_prev_label', $sliderData) ? $sliderData['nav_prev_label'] : 'prev';
+    $sliderNextLabel = array_key_exists('nav_next_label', $sliderData) ? $sliderData['nav_next_label'] : 'next';
+}
+
+$productLabelsEnabled = false;
+try {
+    $productLabelsHelper = $this->helper('WeltPixel\ProductLabels\Helper\Data');
+    $productLabelsEnabled = $productLabelsHelper->enableForProductWidgets();
+} catch (\Exception $ex) {}
+
+?>
+<?php if (!$enabled) {
+    return;
+} ?>
+
+<?php
+$productsType = $this->getData('products_type');
+$imageContainerWidth = $this->getData('image_container_width') ?? 240;
+$imageWidth = $this->getData('image_width') ?? 480;
+$imageHeight = $this->getData('image_height') ?? 600;
+$keepAspectRatio = $this->getData('keep_aspect_ration') ?? true;
+$prCounter = 0;
+$templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+
+if ($productsType != 'recently_viewed') {
+    $products = $this->getProductCollection();
+    $pageSize = count($products) < $products->getPageSize() ? count($products) : $products->getPageSize();
+    if (!count($products)) {
+        return;
+    }
+    $sliderConfig = json_encode($sliderData);
+    $sliderTitle  = array_key_exists('title', $sliderData) ? $sliderData['title'] : '';
+    $breakpoint   = $this->getBreakpointConfiguration();
+    $isHoverImageEnabled = $this->isHoverImageEnabled(); ?>
+
+    <div class="custom-slider mf-products-rp-if-no-compatible">
+        <?php if (trim($sliderTitle)) : ?>
+            <div class="content-heading">
+                <h2 class="title"><?php echo $sliderTitle; ?></h2>
+            </div>
+        <?php endif; ?>
+        <div class="owl-carousel-products-<?php echo $productsType; ?> <?php echo count($products)== 1 ? 'owl-carousel-products-single-item' : ''; ?>">
+            <?php foreach ($products as $product) : ?>
+
+                <?php
+                if ($productsType == 'bestsell_products') {
+                    $prCounter += 1;
+                    if ($prCounter > $pageSize) {
+                        break;
+                    }
+                }
+
+                $productImageHoverUrl = false;
+                $productImageHoverPlaceholderUrl = false;
+                $_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+                $productImageAltText = $_imagehelper->init($product, 'category_page_list')->getLabel();
+                $productImage = $_imagehelper->init($product, 'category_page_list')->constrainOnly(false)->keepAspectRatio($keepAspectRatio)->keepFrame(true)->resize($imageWidth, $imageHeight)->getUrl();
+                $productUrl = $product->getUrlModel()->getUrl($product);
+                if ($isHoverImageEnabled) {
+                    $productImageHover = $_imagehelper->init($product, 'owlcarousel_product_hover')->constrainOnly(false)->keepAspectRatio($keepAspectRatio)->keepFrame(true)->resize($imageWidth, $imageHeight);
+                    $productImageHoverUrl = $productImageHover->getUrl();
+                    $productImageHoverPlaceholderUrl = $productImageHover->getDefaultPlaceholderUrl();
+                }
+
+
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $getWebPUrl = $objectManager->get(\Magefan\WebP\Api\GetWebPUrlInterface::class);
+
+                $productImage = $getWebPUrl->execute($productImage);
+                $productImageHoverUrl = $getWebPUrl->execute($productImageHoverUrl);
+                $productImageHoverPlaceholderUrl = $getWebPUrl->execute($productImageHoverPlaceholderUrl);
+
+                $sliderData['lazyLoad'] = false;
+                ?>
+
+                <div class="item product product-item">
+                    <div data-container="product-grid" class="product-item-info">
+                        <a <?php if ($productLabelsEnabled) : ?>
+                            data-wpproductlabel="1" data-product-id="<?php echo $product->getId() ?>"
+                        <?php endif; ?>
+                            tabindex="-1" class="product photo product-item-photo" href="<?php echo $productUrl; ?>">
+                            <span style="width:<?= $imageContainerWidth ?>px;" class="product-image-container">
+                                <span style="padding-bottom: 125%;" class="product-image-wrapper">
+                                    <img data-webpconverted="1"
+                                         alt="<?php echo $productImageAltText; ?>"
+                                        <?php if (!$sliderData['lazyLoad'] || !$sliderData['loop']) : ?>
+                                            src="<?php echo $productImage; ?>"
+                                        <?php endif; ?>
+                                        <?php if ($isHoverImageEnabled && ($productImageHoverUrl != $productImageHoverPlaceholderUrl)) : ?>
+                                            data-hoversrc="<?php /* @escapeNotVerified */ echo $productImageHoverUrl; ?>"
+                                            onmouseover="if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {this.setAttribute('data-tmp', this.src);this.src=this.getAttribute('data-hoversrc');}"
+                                            onmouseout="if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {this.src=this.getAttribute('data-tmp')}"
+                                            onmousemove="if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {if (this.getAttribute('data-hoversrc') != this.src) this.setAttribute('data-tmp', this.src)}"
+                                        <?php endif; ?>
+                                        class="product-image-photo <?php echo $sliderData['lazyLoad'] ? 'owl-lazy' : '' ?>"
+                                        <?php echo $sliderData['lazyLoad'] ? 'data-src="' . $productImage . '" data-src-retina="' . $productImage . '"' : '' ?>
+                                    />
+                                </span>
+                            </span>
+                        </a>
+                        <div class="product details product-item-details">
+                            <strong class="product name product-item-name">
+                                <a href="<?php echo $productUrl; ?>" class="product-item-link">
+                                    <?php echo $product->getName(); ?>
+                                </a>
+                            </strong>
+                            <?php if ($showReviewsRatins && $templateType): ?>
+                                <?= $block->getReviewsSummaryHtml($product, $templateType) ?>
+                            <?php endif; ?>
+                            <?php if ($showPrice) : ?>
+                                <?php /* @escapeNotVerified */ echo $this->getProductPrice($product); ?>
+                            <?php endif; ?>
+                            <div class="product-item-inner">
+                                <div class="product actions product-item-actions">
+
+                                    <?php if ($showAddToCart) : ?>
+                                        <div class="actions-primary">
+                                            <?php if ($product->isSaleable()): ?>
+                                                <?php if ($product->getTypeInstance()->hasRequiredOptions($product)): ?>
+                                                    <form data-role="tocart-form"
+                                                          action="<?= $block->escapeUrl($block->getAddToCartUrl($product)) ?>"
+                                                          method="post">
+                                                        <?= $block->getBlockHtml('formkey') ?>
+                                                        <button type="submit" class="action tocart primary" title="<?php /* @escapeNotVerified */ echo __('View More') ?>">
+                                                            <span><?= $block->escapeHtml(__('View More')) ?></span>
+                                                        </button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <?php $postDataHelper = $this->helper('Magento\Framework\Data\Helper\PostHelper');
+                                                    $postData = $postDataHelper->getPostData($block->getAddToCartUrl($product), ['product' => $product->getEntityId()])
+                                                    ?>
+                                                    <button class="action tocart primary"
+                                                            data-post='<?php /* @escapeNotVerified */ echo $postData; ?>'
+                                                            type="button" title="<?php /* @escapeNotVerified */ echo __('Add to Cart') ?>">
+                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Cart') ?></span>
+                                                    </button>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <?php if ($product->getIsSalable()): ?>
+                                                    <div class="stock available"><span><?php /* @escapeNotVerified */ echo __('In stock') ?></span></div>
+                                                <?php else: ?>
+                                                    <div class="stock unavailable"><span><?php /* @escapeNotVerified */ echo __('Out of stock') ?></span></div>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="actions-secondary" data-role="add-to-links">
+                                        <?php if ($showWishlist || $showCompare): ?>
+                                            <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
+
+                                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow() && $showWishlist): ?>
+                                                    <a href="#" data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($product); ?>'  class="action towishlist" data-action="add-to-wishlist" title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+                                                    </a>
+                                                <?php endif; ?>
+
+                                                <?php if ($block->getAddToCompareUrl() && $showCompare): ?>
+                                                    <?php
+                                                    $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare'); ?>
+                                                    <a href="#" class="action tocompare"
+                                                       data-post='<?php /* @escapeNotVerified */ echo $compareHelper->getPostDataParams($product); ?>'
+                                                       data-role="add-to-links"
+                                                       title="<?php /* @escapeNotVerified */ echo __('Add to Compare'); ?>">
+                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Compare') ?></span>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div id="pre-div">
+            <?php $loaderHelper = $this->helper('WeltPixel\OwlCarouselSlider\Helper\ImageLoader'); ?>
+            <?php if ($loaderHelper->useDefaultLoader()) : ?>
+                <div class="cssload-loader">
+                    <div class="cssload-inner cssload-one"></div>
+                    <div class="cssload-inner cssload-two"></div>
+                    <div class="cssload-inner cssload-three"></div>
+                </div>
+            <?php else : ?>
+                <table class="imageloader-loader">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <img src="<?= $loaderHelper->getLoadingImageUrl() ?>" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </div>
+
+
+    <script>
+        require(['jquery', 'owl_carousel', 'owl_config', 'owl_config' ],
+            function ($) {
+                $(document).ready(function(){
+                    var products_type = '<?php echo $productsType; ?>',
+                        slider_config = <?php echo $sliderConfig; ?>,
+                        productsCount = '<?php echo count($products) ?>',
+                        carouselElement = $('.owl-carousel-products-' + products_type),
+                        items = ((slider_config.items >= 0 && slider_config.items != null) ? productsCount > slider_config.items ? slider_config.items : productsCount : 2),
+                        itemsBrk1 = (slider_config.items_brk1  >= 0 && slider_config.items_brk1 != null) ? parseInt(slider_config.items_brk1) : items,
+                        itemsBrk2 = (slider_config.items_brk2  >= 0 && slider_config.items_brk2 != null) ? parseInt(slider_config.items_brk2) : items,
+                        itemsBrk3 = (slider_config.items_brk3  >= 0 && slider_config.items_brk3 != null) ? parseInt(slider_config.items_brk3) : items,
+                        itemsBrk4 = (slider_config.items_brk4  >= 0 && slider_config.items_brk4 != null) ? parseInt(slider_config.items_brk4) : items,
+                        stagePadding = slider_config.stagePadding != '' ? parseInt(slider_config.stagePadding) : 0,
+                        sPBrk_1 = slider_config.stagePadding_brk1 != '' ? parseInt(slider_config.stagePadding_brk1) : 0,
+                        sPBrk_2 = slider_config.stagePadding_brk2 != '' ? parseInt(slider_config.stagePadding_brk2) : 0,
+                        sPBrk_3 = slider_config.stagePadding_brk3 != '' ? parseInt(slider_config.stagePadding_brk3) : 0,
+                        sPBrk_4 = slider_config.stagePadding_brk4 != '' ? parseInt(slider_config.stagePadding_brk4) : 0,
+                        rtl = parseInt(slider_config.rtl) == 1 ? true : false,
+                        navClass = [ '<?= $sliderNavPrevClass ?>', '<?= $sliderNavNextClass ?>' ],
+                        navText = [ '<?= $sliderPrevLabel ?>', '<?= $sliderNextLabel ?>' ];
+
+                    if (rtl) {
+                        navClass = navClass.reverse();
+                        navText = navText.reverse();
+                    }
+
+                    options = {
+                        thumbs: true,
+                        nav                 :parseInt(slider_config.nav) == 1 ? true : false,
+                        navClass            :navClass,
+                        navText             :navText,
+                        dots                :parseInt(slider_config.dots) == 1 ? true : false,
+                        dotsEach            :parseInt(slider_config.dotsEach) == 1 ? true : false,
+                        center              :parseInt(slider_config.center) == 1 ? true : false,
+                        items               :items,
+                        loop                :parseInt(slider_config.loop) == 1 ? true : false,
+                        margin              :parseInt(slider_config.margin) || 0,
+                        stagePadding        :parseInt(slider_config.center) == 1 ? 0 : stagePadding,
+                        lazyLoad            :parseInt(slider_config.lazyLoad) == 1 ? true : false,
+                        autoplay            :parseInt(slider_config.autoplay) == 1 ? true : false,
+                        autoplayTimeout     :(slider_config.autoplayTimeout > 0 && slider_config.autoplayTimeout != null) ? parseInt(slider_config.autoplayTimeout) : 3000,
+                        autoplayHoverPause  :parseInt(slider_config.autoplayHoverPause) == 1 ? true : false,
+                        autoHeight          :false,
+                        navSpeed            :(parseInt(slider_config.navSpeed) > 0 && slider_config.navSpeed != null) ? parseInt(slider_config.navSpeed) : 0,
+                        autoplaySpeed       :(parseInt(slider_config.navSpeed) > 0 && slider_config.navSpeed != null) ? parseInt(slider_config.navSpeed) : 0,
+                        dotsSpeed           :(parseInt(slider_config.dotsSpeed) > 0 && slider_config.dotsSpeed != null) ? parseInt(slider_config.dotsSpeed) : 0,
+                        rtl                 :rtl,
+                        slideBy             :'<?php echo $slideBy ?>',
+                        responsive:{
+                    <?php echo $breakpoint['breakpoint_1']; ?>:{
+                        nav             :parseInt(slider_config.nav_brk1) == 1 ? true : false,
+                            dots            :parseInt(slider_config.dots_brk1) == 1 ? true : false,
+                            dotsEach        :parseInt(slider_config.dotsEach_brk1) == 1 ? true : false,
+                            items           :(productsCount > itemsBrk1) ? itemsBrk1 : productsCount,
+                            center          :parseInt(slider_config.center_brk1) == 1 ? true : false,
+                            stagePadding    :parseInt(slider_config.center) == 1 ? 0 : sPBrk_1
+                    },
+                    <?php echo $breakpoint['breakpoint_2']; ?>:{
+                        nav             :parseInt(slider_config.nav_brk2) == 1 ? true : false,
+                            dots            :parseInt(slider_config.dots_brk2) == 1 ? true : false,
+                            dotsEach        :parseInt(slider_config.dotsEach_brk2) == 1 ? true : false,
+                            items           :(productsCount > itemsBrk2) ? itemsBrk2 : productsCount,
+                            center          :parseInt(slider_config.center_brk2) == 1 ? true : false,
+                            stagePadding    :parseInt(slider_config.center) == 1 ? 0 : sPBrk_2
+                    },
+                    <?php echo $breakpoint['breakpoint_3']; ?>:{
+                        nav             :parseInt(slider_config.nav_brk3) == 1 ? true : false,
+                            dots            :parseInt(slider_config.dots_brk3) == 1 ? true : false,
+                            dotsEach        :parseInt(slider_config.dotsEach_brk3) == 1 ? true : false,
+                            items           :(productsCount > itemsBrk3) ? itemsBrk3 : productsCount,
+                            center          :parseInt(slider_config.center_brk3) == 1 ? true : false,
+                            stagePadding    :parseInt(slider_config.center) == 1 ? 0 : sPBrk_3
+                    },
+                    <?php echo $breakpoint['breakpoint_4']; ?>:{
+                        nav             :parseInt(slider_config.nav_brk4) == 1 ? true : false,
+                            dots            :parseInt(slider_config.dots_brk4) == 1 ? true : false,
+                            dotsEach        :parseInt(slider_config.dotsEach_brk4) == 1 ? true : false,
+                            items           :(productsCount > itemsBrk4) ? itemsBrk4 : productsCount,
+                            center          :parseInt(slider_config.center_brk4) == 1 ? true : false,
+                            stagePadding    :parseInt(slider_config.center) == 1 ? 0 : sPBrk_4
+                    }
+                }
+                };
+
+                    <?php if ($randomSort) : ?>
+                    carouselElement.on('initialize.owl.carousel', function(event) {
+                        var $this = $(this);
+                        var carouselItems = $this.children();
+                        while (carouselItems.length) {
+                            $this.append(carouselItems.splice(Math.floor(Math.random() * carouselItems.length), 1)[0]);
+                        }
+                    });
+                    <?php endif; ?>
+
+                    // workaround for owl carousel
+                    // fix nav buttons display on load even when set as false
+                    carouselElement.on('initialized.owl.carousel', function(event) {
+                        setTimeout(function(){
+                            carouselElement.trigger('next.owl.carousel');
+                            carouselElement.trigger('prev.owl.carousel');
+                            $('.owl-thumbs').each(function() {
+                                if (!$('.owl-thumbs').children().length) {$(this).remove();}
+                            });
+                            $('.cssload-loader').parent().remove();
+                        }, 370);
+                    });
+                    /** Lazyload bug when fewer items exist in the carousel then the ones displayed */
+                    carouselElement.on('initialized.owl.carousel', function(event){
+                        var scopeSize = event.page.count;
+                        for (var i = 0; i < scopeSize; i++){
+                            var imgsrc = $(event.target).find('.owl-item').eq(i).find('img').attr('data-src');
+                            $(event.target).find('.owl-item').eq(i).find('img').attr('src', imgsrc);
+                            $(event.target).find('.owl-item').eq(i).find('img').attr('style', 'opacity: 1;');
+                        }
+                    });
+                    carouselElement.owlCarousel(options);
+
+                    if (!MagefanWebP.canUseWebP()) {
+                        document.querySelectorAll('.mf-products-rp-if-no-compatible img').forEach((el) => {
+                            el.setAttribute('src', MagefanWebP.getOriginWebPImage(el.getAttribute('src')));
+
+                            if (el.hasAttribute('data-hoversrc')) {
+                                el.setAttribute('data-hoversrc', MagefanWebP.getOriginWebPImage(el.getAttribute('data-hoversrc')));
+                            }
+                        })
+                    }
+
+                });
+            });
+    </script>
+    <?php
+} else {
+    ?>
+    <div id="recently_viewed"></div>
+
+    <script type="text/x-magento-init">
+    {
+        "#recently_viewed": {
+            "owlAjax": {
+                "ajaxUrl": "<?php echo $block->getUrl('ajaxowl/recentlyviewed/index') ?>",
+                "requestType": "recently_viewed"
+            }
+        }
+
+    }
+    </script>
+    <?php
+}
+?>
+
+
