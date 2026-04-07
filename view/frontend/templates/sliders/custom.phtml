@@ -24,12 +24,12 @@
 
     <?php if ($sliderGeneral['show_title'] && trim($sliderTitle)) : ?>
         <div class="content-heading">
-            <h2 class="title"><?php echo $sliderTitle; ?></h2>
+            <h2 class="title"><?php echo $block->escapeHtml($sliderTitle); ?></h2>
         </div>
     <?php endif; ?>
 
-    <div class="custom-slider <?php if (!$autoHeight) echo  'remove-padding' ?>">
-        <div class="owl-carousel-custom-<?php echo $sliderId;?>" data-slider-id="<?php echo $sliderId;?>">
+    <div class="custom-slider <?php if (!$autoHeight) /* @noEscape */ echo  'remove-padding' ?>">
+        <div class="owl-carousel-custom-<?php /* @noEscape */ echo $sliderId;?>" data-slider-id="<?php /* @noEscape */ echo $sliderId;?>">
             <?php $ctr=0; foreach($bannerConfig as $banner) : ?>
                 <?php
                     $title = (array_key_exists('title', $banner) && $banner['title'] !='') ? $banner['title'] : false;
@@ -53,6 +53,9 @@
                     if(!$thumbimage && $desktopimage) $thumbimage = $desktopimage;
 
                     $altText = array_key_exists('alt_text', $banner) ? $banner['alt_text'] : '';
+                    if (empty($altText)) {
+                        $altText = $title ?? __("Banner Image");
+                    }
                     $video = array_key_exists('video', $banner) ? $banner['video'] : '';
                     $custom = array_key_exists('custom', $banner) ? $banner['custom'] : '';
                     $buttonText = array_key_exists('button_text', $banner) ? $banner['button_text'] : null;
@@ -86,16 +89,16 @@
 
                 ?>
 
-                        <div <?php if ($ctr) echo 'style="display:none"' ?> class="banner-item banner-<?php echo $banner['id']; ?>">
+                        <div <?php if ($ctr) /* @noEscape */ echo 'style="display:none"' ?> class="banner-item banner-<?php /* @noEscape */ echo $banner['id']; ?>">
                         <?php if ($bannerType == 1) : ?>
                             <?php if (!$buttonText): ?>
                                 <?php if (isset($url)): ?>
-                                    <a href="<?php echo $url; ?>" target="<?php echo $target; ?>"
+                                    <a aria-label="<?= $block->escapeHtml(__('Banner Item')) ?>" href="<?php /* @noEscape */ echo $url; ?>" target="<?php /* @noEscape */ echo $target; ?>"
                                         <?php if($isGatEnabled):?>
-                                            data-track-promo-id="<?php echo $gaPromoId; ?>"
-                                            data-track-promo-name="<?php echo $gaPromoName; ?>"
-                                            data-track-promo-creative="<?php echo $gaPromoCreative; ?>"
-                                            data-track-promo-position="<?php echo $gaPromoPosition; ?>"
+                                            data-track-promo-id="<?php /* @noEscape */ echo $gaPromoId; ?>"
+                                            data-track-promo-name="<?php /* @noEscape */ echo $gaPromoName; ?>"
+                                            data-track-promo-creative="<?php /* @noEscape */ echo $gaPromoCreative; ?>"
+                                            data-track-promo-position="<?php /* @noEscape */ echo $gaPromoPosition; ?>"
                                         <?php endif;?>
                                     >
                                 <?php endif; ?>
@@ -104,20 +107,20 @@
                             <span class="banner-image">
                                 <?php if (!$ctr && $mobileimage) : ?>
                                 <picture>
-                                    <source media="(max-width: <?=$this->getMobileBreakPoint()?>px)" srcset="<?= $mediaUrl . $mobileimage ?>" width="<?= $owlFirstImageWidth ?>" height="<?= $owlFirstImageHeight ?>" >
-                                    <source media="(min-width: <?=$this->getMobileBreakPoint()+1?>px)" srcset="<?= $mediaUrl . $desktopimage ?>" width="<?= $owlFirstDesktopImageWidth ?>" height="<?= $owlFirstDesktopImageHeight ?>">
+                                    <source media="(max-width: <?= /* @noEscape */ $this->getMobileBreakPoint()?>px)" srcset="<?= /* @noEscape */ $mediaUrl . $mobileimage ?>" width="<?= /* @noEscape */ $owlFirstImageWidth ?>" height="<?= /* @noEscape */ $owlFirstImageHeight ?>" >
+                                    <source media="(min-width: <?= /* @noEscape */ $this->getMobileBreakPoint()+1?>px)" srcset="<?= /* @noEscape */ $mediaUrl . $desktopimage ?>" width="<?= /* @noEscape */ $owlFirstDesktopImageWidth ?>" height="<?= /* @noEscape */ $owlFirstDesktopImageHeight ?>">
                                 <?php endif; ?>
                                     <img data-webpconverted="1"
                                         <?php if (!$sliderGeneral['lazyLoad']) : ?> width="<?= $owlFirstImageWidth ?>" height="<?= $owlFirstImageHeight ?>"
-                                            src="<?php echo $mediaUrl . $image; ?>"
+                                           src="<?php /* @noEscape */ echo $mediaUrl . $image; ?>"
                                         <?php endif; ?>
                                         <?php if ($mobileimage) : ?>
-                                            data-src-mobile="<?php echo $mediaUrl . $mobileimage ?>"
+                                            data-src-mobile="<?php /* @noEscape */ echo $mediaUrl . $mobileimage ?>"
                                         <?php endif; ?>
                                         <?php if ($image) : ?>
-                                            data-src-desktop="<?php echo $mediaUrl . $desktopimage ?>"
+                                            data-src-desktop="<?php /* @noEscape */ echo $mediaUrl . $desktopimage ?>"
                                         <?php endif; ?>
-                                        alt="<?php echo $altText; ?>" title="<?php echo $altText; ?>" <?php echo $sliderGeneral['lazyLoad'] ? 'data-src="' . $mediaUrl . $image . '" data-src-retina="' . $mediaUrl . $image . '" class="owl-lazy"' : '' ?>
+                                        alt="<?php /* @noEscape */ echo $altText; ?>" title="<?php /* @noEscape */ echo $title; ?>" <?php  /* @noEscape */ echo $sliderGeneral['lazyLoad'] ? 'data-src="' . $mediaUrl . $image . '" data-src-retina="' . $mediaUrl . $image . '" class="owl-lazy"' : '' ?>
                                     />
                                 <?php if (!$ctr && $mobileimage) : ?>
                                 </picture>
@@ -132,11 +135,11 @@
                         <?php elseif ($bannerType == 3) : ?>
                             <?php if (!$buttonText): ?>
                                 <?php if ($url): ?>
-                                    <a href="<?php echo $url; ?>" target="<?php echo $target; ?>" >
+                                    <a aria-label="<?= $block->escapeHtml(__('Button Text')) ?>" href="<?php /* @noEscape */ echo $url; ?>" target="<?php /* @noEscape */ echo $target; ?>" >
                                 <?php endif; ?>
                             <?php endif; ?>
                                 <span class="banner-custom">
-                                    <?php echo $custom; ?>
+                                    <?php /* @noEscape */ echo $custom; ?>
                                 </span>
                             <?php if (!$buttonText): ?>
                                 <?php if ($url): ?>
@@ -145,77 +148,77 @@
                             <?php endif; ?>
                         <?php elseif ($bannerType == 2) : ?>
                             <span class="banner-video">
-                                  <?php echo $this->getVideoHtml($video);  ?>
+                                  <?php /* @noEscape */ echo $this->getVideoHtml($video);  ?>
                             </span>
                         <?php endif; ?>
-                        <div class="content_slider banner-type-<?= $bannerType ?>">
+                        <div class="content_slider banner-type-<?= /* @noEscape */ $bannerType ?>">
 
                             <?php if ($showTitle && $title) : ?>
                                 <?php if($url != NULL): ?>
-                                    <a href="<?php echo $url; ?>" target="<?php echo $target; ?>"
+                                    <a aria-label="<?= /* @noEscape */ $title ?>" href="<?php /* @noEscape */ echo $url; ?>" target="<?php /* @noEscape */ echo $target; ?>"
                                         <?php if($isGatEnabled):?>
-                                            data-track-promo-id="<?php echo $gaPromoId; ?>"
-                                            data-track-promo-name="<?php echo $gaPromoName; ?>"
-                                            data-track-promo-creative="<?php echo $gaPromoCreative; ?>"
-                                            data-track-promo-position="<?php echo $gaPromoPosition; ?>"
+                                            data-track-promo-id="<?php /* @noEscape */ echo $gaPromoId; ?>"
+                                            data-track-promo-name="<?php /* @noEscape */ echo $gaPromoName; ?>"
+                                            data-track-promo-creative="<?php /* @noEscape */ echo $gaPromoCreative; ?>"
+                                            data-track-promo-position="<?php /* @noEscape */ echo $gaPromoPosition; ?>"
                                         <?php endif;?>
                                     >
-                                        <span class="banner-title"><?php echo $title; ?></span>
+                                        <span class="banner-title"><?php /* @noEscape */ echo $title; ?></span>
                                     </a>
                                 <?php else: ?>
-                                    <span class="banner-title"><?php echo $title; ?></span>
+                                    <span class="banner-title"><?php /* @noEscape */ echo $title; ?></span>
                                 <?php endif; ?>
                             <?php endif; ?>
 
                             <?php if ($showDescription && $description) : ?>
                                 <?php if($url != NULL): ?>
-                                    <a href="<?php echo $url; ?>" target="<?php echo $target; ?>"
+                                    <a aria-label="<?= $block->escapeHtml(__('Banner Description')) ?>" href="<?php /* @noEscape */ echo $url; ?>" target="<?php /* @noEscape */ echo $target; ?>"
                                         <?php if($isGatEnabled):?>
-                                            data-track-promo-id="<?php echo $gaPromoId; ?>"
-                                            data-track-promo-name="<?php echo $gaPromoName; ?>"
-                                            data-track-promo-creative="<?php echo $gaPromoCreative; ?>"
-                                            data-track-promo-position="<?php echo $gaPromoPosition; ?>"
+                                            data-track-promo-id="<?php /* @noEscape */ echo $gaPromoId; ?>"
+                                            data-track-promo-name="<?php /* @noEscape */ echo $gaPromoName; ?>"
+                                            data-track-promo-creative="<?php /* @noEscape */ echo $gaPromoCreative; ?>"
+                                            data-track-promo-position="<?php /* @noEscape */ echo $gaPromoPosition; ?>"
                                         <?php endif;?>
                                     >
-                                        <span class="banner-description"><?php echo $description; ?></span>
+                                        <span class="banner-description"><?php /* @noEscape */ echo $description; ?></span>
                                     </a>
                                 <?php else: ?>
-                                    <span class="banner-description"><?php echo $description; ?></span>
+                                    <span class="banner-description"><?php /* @noEscape */ echo $description; ?></span>
                                 <?php endif;?>
                             <?php endif; ?>
 
                             <div class="buttons">
                                 <?php if ($customCss): ?>
                                     <style scoped>
-                                        <?php echo $customCss; ?>
+                                        <?php /* @noEscape */ echo $customCss; ?>
                                     </style>
                                 <?php endif; ?>
                                 <?php if ($buttonText && $url): ?>
-                                    <a class="action primary" href="<?php echo $url; ?>" target="<?php echo $target; ?>"
+                                    <a aria-label="<?= $block->escapeHtml(__('Banner Button Text')) ?>" class="action primary" href="<?php /* @noEscape */ echo $url; ?>" target="<?php /* @noEscape */ echo $target; ?>"
                                         <?php if($isGatEnabled):?>
-                                            data-track-promo-id="<?php echo $gaPromoId; ?>"
-                                            data-track-promo-name="<?php echo $gaPromoName; ?>"
-                                            data-track-promo-creative="<?php echo $gaPromoCreative; ?>"
-                                            data-track-promo-position="<?php echo $gaPromoPosition; ?>"
+                                            data-track-promo-id="<?php /* @noEscape */ echo $gaPromoId; ?>"
+                                            data-track-promo-name="<?php /* @noEscape */ echo $gaPromoName; ?>"
+                                            data-track-promo-creative="<?php /* @noEscape */ echo $gaPromoCreative; ?>"
+                                            data-track-promo-position="<?php /* @noEscape */ echo $gaPromoPosition; ?>"
                                         <?php endif;?>
-                                    > <?php echo $buttonText; ?> </a>
+                                    > <?php /* @noEscape */ echo $buttonText; ?> </a>
                                 <?php endif; ?>
                                 <?php if ($customContent): ?>
                                     <div class="clearfix"></div>
                                     <div class="custom_content">
                                         <?php if($wrapLink && $url != NULL): ?>
-                                            <a href="<?php echo $url; ?>" target="<?php echo $target; ?>"
+                                            <a aria-label="<?= $block->escapeHtml(__('Banner Content')) ?>" href="<?php /* @noEscape */ echo $url; ?>" target="<?php /* @noEscape */ echo $target; ?>"
                                                 <?php if($isGatEnabled):?>
-                                                    data-track-promo-id="<?php echo $gaPromoId; ?>"
-                                                    data-track-promo-name="<?php echo $gaPromoName; ?>"
-                                                    data-track-promo-creative="<?php echo $gaPromoCreative; ?>"
-                                                    data-track-promo-position="<?php echo $gaPromoPosition; ?>"
+                                                    data-track-promo-id="<?php /* @noEscape */ echo $gaPromoId; ?>"
+                                                    data-track-promo-name="<?php /* @noEscape */ echo $gaPromoName; ?>"
+                                                    data-track-promo-creative="<?php /* @noEscape */ echo $gaPromoCreative; ?>"
+                                                    data-track-promo-position="<?php /* @noEscape */ echo $gaPromoPosition; ?>"
                                                 <?php endif;?>
                                             >
-                                                <?php echo $customContent; ?>
+                                                <?php /* @noEscape */ echo $customContent; ?>
                                             </a>
                                         <?php else: ?>
-                                            <?php echo $customContent; ?>
+                                            <?php /* @noEscape */ echo $customContent; ?>
                                         <?php endif;?>
                                     </div>
                                 <?php endif; ?>
@@ -238,7 +241,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <img src="<?= $loaderHelper->getLoadingImageUrl() ?>" />
+                            <img src="<?= $block->escapeUrl($loaderHelper->getLoadingImageUrl()) ?>" alt="<?= $block->escapeHtml(__('Loader Image')) ?>" />
                         </td>
                     </tr>
                     </tbody>
@@ -246,12 +249,12 @@
             <?php endif; ?>
         </div>
         <?php if($thumbsEnabled):?>
-            <div class="owl-thumbs" data-slider-id="<?php echo $sliderId;?>">
+            <div class="owl-thumbs" data-slider-id="<?php /* @noEscape */ echo $sliderId;?>">
                 <?php foreach($thumbsArr as $img):?>
                     <div class="owl-thumb-item">
-                        <img src="<?php echo $mediaUrl . $img['img']; ?>"
-                             alt="<?php echo $img['alt']; ?>"
-                             title="<?php echo $img['alt']; ?>"
+                        <img src="<?php /* @noEscape */ echo $mediaUrl . $img['img']; ?>"
+                             alt="<?php /* @noEscape */ echo $img['alt']; ?>"
+                             title="<?php /* @noEscape */ echo $img['alt']; ?>"
                         />
                     </div>
                 <?php endforeach;?>
@@ -260,10 +263,10 @@
     </div>
 
     <style>
-        .owl-carousel-custom-<?php echo $sliderId;?>.owl-theme .owl-controls .owl-nav [class*=owl-] {
-            border-radius: <?= $navBorderRadius ?>;
-            -webkit-border-radius: <?= $navBorderRadius ?>;
-            -moz-border-radius: <?= $navBorderRadius ?>;
+        .owl-carousel-custom-<?php /* @noEscape */ echo $sliderId;?>.owl-theme .owl-controls .owl-nav [class*=owl-] {
+            border-radius: <?= /* @noEscape */ $navBorderRadius ?>;
+            -webkit-border-radius: <?= /* @noEscape */ $navBorderRadius ?>;
+            -moz-border-radius: <?= /* @noEscape */ $navBorderRadius ?>;
         }
     </style>
 
@@ -271,8 +274,8 @@
         require(['jquery', 'underscore', 'owl_carousel', 'owl_config' ],
             function ($, _) {
                 $(document).ready(function() {
-                    var slider_id = <?php echo $sliderId; ?>;
-                    var slider_config = <?php echo $sliderConfig; ?>;
+                    var slider_id = <?php /* @noEscape */ echo $sliderId; ?>;
+                    var slider_config = <?php /* @noEscape */ echo $sliderConfig; ?>;
 
                     var items = ((slider_config.items >= 0 && slider_config.items != null) ? slider_config.items : 1);
                     if(slider_config.transition != 'slide') {
@@ -283,7 +286,7 @@
                     var animate_Out = slider_config.transition != 'fadeOut' ? true : false;
 
                     <?php if ($imageAdjustmentRequired) : ?>
-                        var mobileBreakPoint = <?php echo $this->getMobileBreakPoint(); ?>;
+                        var mobileBreakPoint = <?php /* @noEscape */ echo $this->getMobileBreakPoint(); ?>;
                         function adjustOwlImages() {
                             var windowWidth = $(window).width();
 
@@ -346,7 +349,7 @@
                         var $this = $(this);
                         var carouselItems = $this.children();
                         var nrOfElements = carouselItems.length;
-                        var requestUrl = '<?php echo $this->getUrl("ajaxowl/banner/validity/slider_id/" . $sliderId); ?>';
+                        var requestUrl = '<?php echo $block->escapeUrl($this->getUrl("ajaxowl/banner/validity/slider_id/" . $sliderId)); ?>';
                         $.get({
                             url: requestUrl,
                             cache: false,
@@ -421,19 +424,19 @@
 
 
                         responsive:{
-                            <?php echo $breakpoint['breakpoint_1']; ?>:{
+                            <?php /* @noEscape */ echo $breakpoint['breakpoint_1']; ?>:{
                                 nav     :parseInt(slider_config.nav_brk1) == 1 ? true : false,
                                 items   :parseInt(slider_config.items_brk1  >= 0 ? slider_config.items_brk1 : 0),
                             },
-                            <?php echo $breakpoint['breakpoint_2']; ?>:{
+                            <?php /* @noEscape */ echo $breakpoint['breakpoint_2']; ?>:{
                                 nav     :parseInt(slider_config.nav_brk2) == 1 ? true : false,
                                 items   :parseInt(slider_config.items_brk2  >= 0 ? slider_config.items_brk2 : 0),
                             },
-                            <?php echo $breakpoint['breakpoint_3']; ?>:{
+                            <?php /* @noEscape */ echo $breakpoint['breakpoint_3']; ?>:{
                                 nav     :parseInt(slider_config.nav_brk3) == 1 ? true : false,
                                 items   :parseInt(slider_config.items_brk3  >= 0 ? slider_config.items_brk3 : 0),
                             },
-                            <?php echo $breakpoint['breakpoint_4']; ?>:{
+                            <?php /* @noEscape */ echo $breakpoint['breakpoint_4']; ?>:{
                                 nav     :parseInt(slider_config.nav_brk4) == 1 ? true : false,
                                 items   :parseInt(slider_config.items_brk4  >= 0 ? slider_config.items_brk4 : 0),
                             }
